@@ -81,7 +81,7 @@ public class Pathfinder {
             solution.add(0, current.action);
             current = current.parent;
         }
-            return solution;
+        return solution;
     }
 
 }
