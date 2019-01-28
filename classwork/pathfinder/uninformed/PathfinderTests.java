@@ -85,4 +85,38 @@ public class PathfinderTests {
         assertEquals(20, result[1]); // Ensure that the solution is optimal
     }
     
+    @Test
+    public void testPathfinder_t4() {
+        String[] maze = {
+            "XXXX",
+            "XIGX",
+            "XXXX"
+        };
+        MazeProblem prob = new MazeProblem(maze);
+        ArrayList<String> solution = Pathfinder.solve(prob);
+        
+        int[] result = prob.testSolution(solution);
+        assertEquals(1,  result[0]);
+        assertEquals(1, result[1]);
+    }
+    
+    @Test
+    public void testPathfinder_t5() {
+        String[] maze = {
+            "XXXXXXX",
+            "XI....X",
+            "XXXXX.X",
+            "X.....X",
+            "X.XXXXX",
+            "X....GX",
+            "XXXXXXX"
+        };
+        MazeProblem prob = new MazeProblem(maze);
+        ArrayList<String> solution = Pathfinder.solve(prob);
+        
+        int[] result = prob.testSolution(solution);
+        assertEquals(1,  result[0]);
+        assertEquals(16, result[1]);
+    }
+    
 }
