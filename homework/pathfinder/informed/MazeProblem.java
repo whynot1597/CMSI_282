@@ -123,37 +123,38 @@ public class MazeProblem {
 	}
 
 	/**
-	 * Given a possibleSoln, tests to ensure that it is indeed a solution to this
-	 * MazeProblem, as well as returning the cost.
+	 * Given a possibleSoln, tests to ensure that it is indeed a solution to this MazeProblem,
+	 * as well as returning the cost.
 	 * 
-	 * @param possibleSoln A possible solution to test, which is a list of actions
-	 *                     of the format: ["U", "D", "D", "L", ...]
-	 * @return A 2-element array of ints of the format [isSoln, cost] where:<br>
-	 *         isSoln will be 0 if it is not a solution, and 1 if it is<br>
-	 *         cost will be an integer denoting the cost of the given solution to
-	 *         test optimality
+	 * @param possibleSoln A possible solution to test, which is a list of actions of the format:
+	 * ["U", "D", "D", "L", ...]
+	 * @return A 2-element array of ints of the format [isSoln, cost] where:
+	 * isSoln will be 0 if it is not a solution, and 1 if it is
+	 * cost will be an integer denoting the cost of the given solution to test optimality
 	 */
-	public int[] testSolution(ArrayList<String> possibleSoln) {
-		// Update the "moving state" that begins at the start and is modified by the
-		// transitions
-		MazeState movingState = new MazeState(INITIAL_STATE.col, INITIAL_STATE.row);
-		int cost = 0;
-		int[] result = { 0, -1 };
-
-		// For each action, modify the movingState, and then check that we have landed
-		// in
-		// a legal position in this maze
-		for (String action : possibleSoln) {
-			MazeState actionMod = TRANS_MAP.get(action);
-			movingState.add(actionMod);
-			if (maze[movingState.row].charAt(movingState.col) == 'X') {
-				return result;
-			}
-			cost++;
-		}
-		result[0] = isGoal(movingState) ? 1 : 0;
-		result[1] = cost;
-		return result;
+	public int[] testSolution (ArrayList<String> possibleSoln) {
+	    // Update the "moving state" that begins at the start and is modified by the transitions
+	    MazeState movingState = new MazeState(INITIAL_STATE.col, INITIAL_STATE.row);
+	    int cost = 0;
+	    boolean hasKey = false;
+	    int[] result = {0, -1};
+	    
+	    // For each action, modify the movingState, and then check that we have landed in
+	    // a legal position in this maze
+	    for (String action : possibleSoln) {
+	        MazeState actionMod = TRANS_MAP.get(action);
+	        movingState.add(actionMod);
+	        switch (maze[movingState.row].charAt(movingState.col)) {
+	        case 'X':
+	            return result;
+	        case 'K':
+	            hasKey = true; break;
+	        }
+	        cost += getCost(movingState);
+	    }
+	    result[0] = isGoal(movingState) && hasKey ? 1 : 0;
+	    result[1] = cost;
+	    return result;
 	}
 
 }
