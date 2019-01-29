@@ -47,7 +47,7 @@ public class PathfinderTests {
         assertEquals(12, result[1]); // Ensure that the solution is optimal
     }
     
-    @Test
+    /*@Test
     public void testPathfinder_t2() {
         String[] maze = {
             "XXXXXXXXXXXXX",
@@ -64,7 +64,7 @@ public class PathfinderTests {
         System.out.println(solution);
         assertEquals(1,  result[0]); // Test that result is a solution
         assertEquals(28, result[1]); // Ensure that the solution is optimal
-    }
+    }*/
 
     @Test
     public void testPathfinder_t3() {
