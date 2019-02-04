@@ -154,7 +154,6 @@ public class MazeProblem {
 	        case 'K':
 	            hasKey = true; break;
 	        }
-	        //TODO: add getCost method
 	        cost += getCost(movingState);
 	    }
 	    result[0] = isGoal(movingState) && hasKey ? 1 : 0;
