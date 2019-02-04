@@ -121,6 +121,10 @@ public class MazeProblem {
 		}
 		return result;
 	}
+	
+	public int getCost(MazeState state) {
+		throw new UnsupportedOperationException();
+	}
 
 	/**
 	 * Given a possibleSoln, tests to ensure that it is indeed a solution to this MazeProblem,
