@@ -1,5 +1,16 @@
 /************************************************************************************************
-
+*   Name:       Pathfinder.java
+*   Date:       02/11/2019
+*   @author:    Jeremy Goldberg
+*   @author:    Andrey Varakin
+*   Purpose:    The Pathfinding game proceeds as follows:
+*               (*) The MazeProblem is formalized, including the maze layout, 
+*                   initial state, goal state, key state, possible mud state(s),
+*                   actions, transitions, and a goal test.
+*               (*) The Pathfinder agent is provided with the problem.
+*               (*) The Pathfinder must find a sequence of actions ("U", "D", "L", or "R") 
+*                   that takes it from the initial state to the goal with minimal cost.
+*   @see:       http://forns.lmu.build/classes/spring-2019/cmsi-282/homework/hw1/homework-1.html
 **************************************************************************************************/
 
 package pathfinder.informed;
