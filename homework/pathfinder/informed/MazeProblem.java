@@ -62,6 +62,8 @@ public class MazeProblem {
 		for (int row = 0; row < rows; row++) {
 			for (int col = 0; col < cols; col++) {
 				switch (maze[row].charAt(col)) {
+				case 'M':
+					foundMuds.add(new MazeState(col, row));
 				case 'I':
 					foundInitial = new MazeState(col, row);
 					break;
@@ -71,8 +73,6 @@ public class MazeProblem {
 				case 'K':
 					foundKey = new MazeState(col, row);
 				case '.':
-				case 'M':
-					foundMuds.add(new MazeState(col, row));
 				case 'X':
 					break;
 				default:
@@ -109,7 +109,7 @@ public class MazeProblem {
 	 *         for current MazeState (c, r):<br>
 	 *         { "U": (c, r-1), "D": (c, r+1), "L": (c-1, r), "R": (c+1, r) }
 	 */
-	public Map<String, MazeState> getTransitions(MazeState state) {
+	public Map<String, MazeState> getTransitions(pathfinder.informed.MazeState state) {
 		// Store transitions as a Map between actions ("U", "D", ...) and
 		// the MazeStates that they result in from state
 		Map<String, MazeState> result = new HashMap<>();

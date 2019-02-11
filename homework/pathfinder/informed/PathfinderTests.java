@@ -26,6 +26,7 @@ public class PathfinderTests {
         // - isSolution = 0 if it is not, 1 if it is
         // - cost = numerical cost of proposed solution
         int[] result = prob.testSolution(solution);
+        System.out.println(solution);
         assertEquals(1, result[0]); // Test that result is a solution
         assertEquals(6, result[1]); // Ensure that the solution is optimal
     }
@@ -43,6 +44,7 @@ public class PathfinderTests {
         ArrayList<String> solution = Pathfinder.solve(prob);
         
         int[] result = prob.testSolution(solution);
+        System.out.println(solution);
         assertEquals(1, result[0]);  // Test that result is a solution
         assertEquals(14, result[1]); // Ensure that the solution is optimal
     }

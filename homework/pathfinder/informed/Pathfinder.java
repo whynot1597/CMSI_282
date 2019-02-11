@@ -4,12 +4,8 @@
 
 package pathfinder.informed;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
+
 
 /**
  * Maze Pathfinding algorithm that implements a basic, uninformed, breadth-first
@@ -30,22 +26,51 @@ public class Pathfinder {
     	ArrayList<MazeState> KEY_STATE_LIST = new ArrayList<MazeState>();
     	KEY_STATE_LIST.add(problem.KEY_STATE);
     	
-    	ArrayList<String> firstPath = lowestCostPath(problem.INITIAL_STATE, KEY_STATE_LIST);
-    	ArrayList<String> secondPath = lowestCostPath(problem.KEY_STATE, problem.GOAL_STATES);
+    	ArrayList<String> firstPath = lowestCostPath(problem.INITIAL_STATE, KEY_STATE_LIST, problem);
+    	ArrayList<String> secondPath = lowestCostPath(problem.KEY_STATE, problem.GOAL_STATES, problem);
     	
     	firstPath.addAll(secondPath);
     	return firstPath;
     	
     }
 
-	private static ArrayList<String> lowestCostPath(MazeState beginning, ArrayList<MazeState> ends) {
-		Queue <SearchTreeNode> frontier = new PriorityQueue<>(100, CostComparator());
-		frontier.add(new SearchTreeNode(beginning, null, null, 0, getDistanceToEnd(beginning, ends)));
+	private static ArrayList<String> lowestCostPath(MazeState beginning, ArrayList<MazeState> ends, MazeProblem problem) {
+		Queue <SearchTreeNode> frontier = new PriorityQueue<>(100, new CostComparator());
+		SearchTreeNode first = new SearchTreeNode(beginning, null, null, 0, getDistanceToEnd(beginning, ends));
+		frontier.add(first);
 		
 		boolean foundEnd = false;
 		while(!foundEnd) {
+			SearchTreeNode current = frontier.poll();
+			for (int i = 0; i < ends.size(); i++) {
+				if (current.state.equals(ends.get(i))) {
+					return getSolution(current, first);
+				}
+			}
 			
+			Map<String, MazeState> children = problem.getTransitions(current.state);
+			
+			for (Map.Entry<String, MazeState> child : children.entrySet()) {
+				frontier.add(new SearchTreeNode(child.getValue(), child.getKey(), current, getHistoryCost(current, problem), getDistanceToEnd(current.state, ends)));
+			}
 		}
+		
+		return null;
+	}
+	
+	private static int getHistoryCost (SearchTreeNode current, MazeProblem problem) {
+		int cost = 0;
+		if (current.parent != null) {
+			cost = current.parent.totalCost;
+		}
+		
+		for (int i = 0; i < problem.MUD_STATES.size(); i++) {
+			if (current.state.equals(problem.MUD_STATES.get(i))) {
+				cost += 2;
+			}
+		}
+		cost += 1;
+		return cost;
 	}
 	
 	private static int getDistanceToEnd (MazeState current, ArrayList<MazeState> ends) {
