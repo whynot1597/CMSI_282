@@ -31,8 +31,11 @@ public class Pathfinder {
     	ArrayList<MazeState> KEY_STATE_LIST = new ArrayList<MazeState>();
     	KEY_STATE_LIST.add(problem.KEY_STATE);
     	
-    	ArrayList<MazeState> firstPath = lowestCostPath(problem.INITIAL_STATE, KEY_STATE_LIST);
-    	ArrayList<MazeState> secondPath = lowestCostPath(problem.KEY_STATE, problem.GOAL_STATES);
+    	ArrayList<String> firstPath = lowestCostPath(problem.INITIAL_STATE, KEY_STATE_LIST);
+    	ArrayList<String> secondPath = lowestCostPath(problem.KEY_STATE, problem.GOAL_STATES);
+    	
+    	firstPath.addAll(secondPath);
+    	return firstPath;
     	
     }
 
