@@ -6,11 +6,10 @@ package pathfinder.informed;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 import java.util.Map;
 import java.util.Queue;
-
-import pathfinder.uninformed.SearchTreeNode;
 
 /**
  * Maze Pathfinding algorithm that implements a basic, uninformed, breadth-first
@@ -40,8 +39,13 @@ public class Pathfinder {
     }
 
 	private static ArrayList<String> lowestCostPath(MazeState beginning, ArrayList<MazeState> ends) {
-		Queue <SearchTreeNode> frontier = new LinkedList<> ();
+		Queue <SearchTreeNode> frontier = new PriorityQueue<>(100, CostComparator());
 		frontier.add(new SearchTreeNode(beginning, null, null, 0, getDistanceToEnd(beginning, ends)));
+		
+		boolean foundEnd = false;
+		while(!foundEnd) {
+			
+		}
 	}
 	
 	private static int getDistanceToEnd (MazeState current, ArrayList<MazeState> ends) {
@@ -94,4 +98,16 @@ class SearchTreeNode {
 		this.totalCost = historyCost + heuristicCost;
 	}
 
+}
+
+class CostComparator implements Comparator<SearchTreeNode> {
+    public int compare(SearchTreeNode x, SearchTreeNode y) {
+        if (x.totalCost < y.totalCost) {
+            return -1;
+        }
+        if (x.totalCost > y.totalCost) {
+            return 1;
+        }
+        return 0;
+    }
 }
