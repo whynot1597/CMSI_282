@@ -29,6 +29,10 @@ public class Pathfinder {
     	ArrayList<String> firstPath = lowestCostPath(problem.INITIAL_STATE, KEY_STATE_LIST, problem);
     	ArrayList<String> secondPath = lowestCostPath(problem.KEY_STATE, problem.GOAL_STATES, problem);
     	
+    	if (firstPath == null || secondPath == null) {
+    		return null;
+    	}
+    	
     	firstPath.addAll(secondPath);
     	return firstPath;
     	
@@ -36,12 +40,13 @@ public class Pathfinder {
 
 	private static ArrayList<String> lowestCostPath(MazeState beginning, ArrayList<MazeState> ends, MazeProblem problem) {
 		Queue <SearchTreeNode> frontier = new PriorityQueue<>(100, new CostComparator());
+		ArrayList<MazeState> visited = new ArrayList<>();
 		SearchTreeNode first = new SearchTreeNode(beginning, null, null, 0, getDistanceToEnd(beginning, ends));
 		frontier.add(first);
 		
-		boolean foundEnd = false;
-		while(!foundEnd) {
+		while(!frontier.isEmpty()) {
 			SearchTreeNode current = frontier.poll();
+			visited.add(current.state);
 			for (int i = 0; i < ends.size(); i++) {
 				if (current.state.equals(ends.get(i))) {
 					return getSolution(current, first);
@@ -51,21 +56,22 @@ public class Pathfinder {
 			Map<String, MazeState> children = problem.getTransitions(current.state);
 			
 			for (Map.Entry<String, MazeState> child : children.entrySet()) {
-				frontier.add(new SearchTreeNode(child.getValue(), child.getKey(), current, getHistoryCost(current, problem), getDistanceToEnd(current.state, ends)));
+				SearchTreeNode toAdd = new SearchTreeNode(child.getValue(), child.getKey(), current, getHistoryCost(current, problem, child.getValue()), getDistanceToEnd(child.getValue(), ends));
+				if (!(frontier.contains(toAdd) || visited.contains(toAdd.state))) {
+					frontier.add(toAdd);
+				}
 			}
+			
 		}
 		
 		return null;
 	}
 	
-	private static int getHistoryCost (SearchTreeNode current, MazeProblem problem) {
-		int cost = 0;
-		if (current.parent != null) {
-			cost = current.parent.totalCost;
-		}
+	private static int getHistoryCost (SearchTreeNode current, MazeProblem problem, MazeState child) {
+		int cost = current.totalCost;
 		
 		for (int i = 0; i < problem.MUD_STATES.size(); i++) {
-			if (current.state.equals(problem.MUD_STATES.get(i))) {
+			if (child.equals(problem.MUD_STATES.get(i))) {
 				cost += 2;
 			}
 		}

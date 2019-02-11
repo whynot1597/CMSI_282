@@ -64,6 +64,7 @@ public class MazeProblem {
 				switch (maze[row].charAt(col)) {
 				case 'M':
 					foundMuds.add(new MazeState(col, row));
+					break;
 				case 'I':
 					foundInitial = new MazeState(col, row);
 					break;
@@ -72,7 +73,9 @@ public class MazeProblem {
 					break;
 				case 'K':
 					foundKey = new MazeState(col, row);
+					break;
 				case '.':
+					break;
 				case 'X':
 					break;
 				default:
