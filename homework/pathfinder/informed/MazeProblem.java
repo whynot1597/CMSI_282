@@ -15,7 +15,8 @@ public class MazeProblem {
 	// -----------------------------------------------------------------------------
 	private String[] maze;
 	private int rows, cols;
-	public final MazeState INITIAL_STATE, GOAL_STATE;
+	public final MazeState INITIAL_STATE, KEY_STATE;
+	public final ArrayList<MazeState> GOAL_STATES, MUD_STATES;
 	private static final Map<String, MazeState> TRANS_MAP = createTransitions();
 
 	/**
@@ -52,7 +53,9 @@ public class MazeProblem {
 		this.maze = maze;
 		this.rows = maze.length;
 		this.cols = (rows == 0) ? 0 : maze[0].length();
-		MazeState foundInitial = null, foundGoal = null;
+		ArrayList<MazeState> foundGoals = new ArrayList<MazeState>(), 
+						     foundMuds = new ArrayList<MazeState>();
+		MazeState foundInitial = null, foundKey = null;
 
 		// Find the initial and goal state in the given maze, and then
 		// store in fields once found
@@ -63,9 +66,13 @@ public class MazeProblem {
 					foundInitial = new MazeState(col, row);
 					break;
 				case 'G':
-					foundGoal = new MazeState(col, row);
+					foundGoals.add(new MazeState(col, row));
 					break;
+				case 'K':
+					foundKey = new MazeState(col, row);
 				case '.':
+				case 'M':
+					foundMuds.add(new MazeState(col, row));
 				case 'X':
 					break;
 				default:
@@ -74,7 +81,9 @@ public class MazeProblem {
 			}
 		}
 		INITIAL_STATE = foundInitial;
-		GOAL_STATE = foundGoal;
+		KEY_STATE = foundKey;
+		GOAL_STATES = foundGoals;
+		MUD_STATES = foundMuds;
 	}
 
 	// Methods
@@ -87,7 +96,7 @@ public class MazeProblem {
 	 * @return Boolean of whether or not the given state is a Goal.
 	 */
 	public boolean isGoal(MazeState state) {
-		return state.equals(GOAL_STATE);
+		return GOAL_STATES.contains(state);
 	}
 
 	/**
@@ -123,7 +132,7 @@ public class MazeProblem {
 	}
 	
 	public int getCost(MazeState state) {
-		throw new UnsupportedOperationException();
+		return MUD_STATES.contains(state) ? 3 : 1;
 	}
 
 	/**

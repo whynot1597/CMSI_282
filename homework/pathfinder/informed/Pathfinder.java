@@ -5,9 +5,12 @@
 package pathfinder.informed;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+
+import pathfinder.uninformed.SearchTreeNode;
 
 /**
  * Maze Pathfinding algorithm that implements a basic, uninformed, breadth-first
@@ -25,51 +28,34 @@ public class Pathfinder {
      *         initial to the goal state, of the format: ["R", "R", "L", ...]
      */
     public static ArrayList<String> solve(MazeProblem problem) {
-        // Initialize frontier -- what data structure should you use here for
-        // breadth-first search? Recall: The frontier holds SearchTreeNodes!
-        Queue <SearchTreeNode> frontier = new LinkedList<> ();
-
-        // Add new SearchTreeNode representing the problem's initial state to the
-        // frontier. Since this is the initial state, the node's action and parent will
-        // be null
-        frontier.add(new SearchTreeNode(problem.INITIAL_STATE, null, null));
-
-        // Loop: as long as the frontier is not empty...
-        while (!frontier.isEmpty()) {
-
-            //  Get the next node to expand by the ordering of breadth-first search
-            SearchTreeNode current = frontier.remove();
-
-            // If that node's state is the goal (see problem's isGoal method),
-            // you're done! Return the solution
-            // [Hint] Use a helper method to collect the solution from the current node!
-            if (problem.isGoal(current.state)) {
-                return getSolution(current);
-            }
-            // Otherwise, must generate children to keep searching. So, use the
-            // problem's getTransitions method from the currently expanded node's state...
-            Map<String, MazeState> children = problem.getTransitions(current.state);
-
-            // ...and *for each* of those transition states...
-            // [Hint] Look up how to iterate through <key, value> pairs in a Map -- an
-            // example of this is already done in the MazeProblem's getTransitions method
-            for (Map.Entry<String, MazeState> child : children.entrySet()) {
-                // ...add a new SearchTreeNode to the frontier with the appropriate
-                // action, state, and parent
-                frontier.add(new SearchTreeNode(child.getValue(), child.getKey(), current));
-            }
-
-        }
-
-        // Should never get here, but just return null to make the compiler happy
-        return null;
+    	ArrayList<MazeState> KEY_STATE_LIST = new ArrayList<MazeState>();
+    	KEY_STATE_LIST.add(problem.KEY_STATE);
+    	
+    	ArrayList<MazeState> firstPath = lowestCostPath(problem.INITIAL_STATE, KEY_STATE_LIST);
+    	ArrayList<MazeState> secondPath = lowestCostPath(problem.KEY_STATE, problem.GOAL_STATES);
+    	
     }
 
-    private static ArrayList<String> getSolution(SearchTreeNode current) {
+	private static ArrayList<String> lowestCostPath(MazeState beginning, ArrayList<MazeState> ends) {
+		Queue <SearchTreeNode> frontier = new LinkedList<> ();
+		frontier.add(new SearchTreeNode(beginning, null, null, 0, getDistanceToEnd(beginning, ends)));
+	}
+	
+	private static int getDistanceToEnd (MazeState current, ArrayList<MazeState> ends) {
+		int[] solutions = new int[ends.size()];
+		for (int i = 0; i < ends.size(); i++) {
+			solutions[i] = Math.abs(current.row - ends.get(i).row) + Math.abs(current.col - ends.get(i).col);
+		}
+		Arrays.sort(solutions);
+		return solutions[0];
+	}
+		
+
+    private static ArrayList<String> getSolution(SearchTreeNode end, SearchTreeNode beginning) {
         ArrayList<String> solution = new ArrayList<>();
-        while (current.parent != null) {
-            solution.add(0, current.action);
-            current = current.parent;
+        while (!end.state.equals(beginning.state)) {
+            solution.add(0, end.action);
+            end = end.parent;
         }
         return solution;
     }
@@ -85,6 +71,9 @@ class SearchTreeNode {
 	MazeState state;
 	String action;
 	SearchTreeNode parent;
+	int historyCost;
+	int heuristicCost;
+	int totalCost;
 
 	/**
 	 * Constructs a new SearchTreeNode to be used in the Search Tree.
@@ -93,10 +82,13 @@ class SearchTreeNode {
 	 * @param action The action that *led to* this state / node.
 	 * @param parent Reference to parent SearchTreeNode in the Search Tree.
 	 */
-	SearchTreeNode(MazeState state, String action, SearchTreeNode parent) {
+	SearchTreeNode(MazeState state, String action, SearchTreeNode parent, int historyCost, int heuristicCost) {
 		this.state = state;
 		this.action = action;
 		this.parent = parent;
+		this.historyCost = historyCost;
+		this.heuristicCost = heuristicCost;
+		this.totalCost = historyCost + heuristicCost;
 	}
 
 }
