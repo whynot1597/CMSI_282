@@ -43,10 +43,10 @@ public class MazeProblem {
 	 * @param maze An array of Strings in which characters represent the legal maze
 	 *             entities, including:<br>
 	 *             'X': A wall, 'G': A goal, 'I': The initial state, '.': an open
-	 *             spot For example, a valid maze might look like:
+	 *             spot, 'M': Mud tile, 'K': Key tile For example, a valid maze might look like:
 	 * 
 	 *             <pre>
-	 *             String[] maze = { "XXXXXXX", "X.....X", "XIX.X.X", "XX.X..X", "XG....X", "XXXXXXX" };
+	 *             String[] maze = { "XXXXXXX", "XI...KX", "X.....X", "X.X.XGX", "XXXXXXX" };
 	 *             </pre>
 	 */
 	MazeProblem(String[] maze) {
@@ -57,8 +57,8 @@ public class MazeProblem {
 						     foundMuds = new ArrayList<MazeState>();
 		MazeState foundInitial = null, foundKey = null;
 
-		// Find the initial and goal state in the given maze, and then
-		// store in fields once found
+		// Find the initial, goal, key, and possible mud states 
+		// in the given maze, and then store in fields once found
 		for (int row = 0; row < rows; row++) {
 			for (int col = 0; col < cols; col++) {
 				switch (maze[row].charAt(col)) {
@@ -112,7 +112,7 @@ public class MazeProblem {
 	 *         for current MazeState (c, r):<br>
 	 *         { "U": (c, r-1), "D": (c, r+1), "L": (c-1, r), "R": (c+1, r) }
 	 */
-	public Map<String, MazeState> getTransitions(pathfinder.informed.MazeState state) {
+	public Map<String, MazeState> getTransitions(MazeState state) {
 		// Store transitions as a Map between actions ("U", "D", ...) and
 		// the MazeStates that they result in from state
 		Map<String, MazeState> result = new HashMap<>();
@@ -134,6 +134,12 @@ public class MazeProblem {
 		return result;
 	}
 	
+	/**
+	 * Returns 1 or 3 indicating whether the current state is a mud tile.
+	 * 
+	 * @param state A MazeState (col, row) to test
+	 * @return int which is either 3 or 1
+	 */
 	public int getCost(MazeState state) {
 		return MUD_STATES.contains(state) ? 3 : 1;
 	}

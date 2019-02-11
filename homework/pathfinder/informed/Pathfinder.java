@@ -37,7 +37,17 @@ public class Pathfinder {
     	return firstPath;
     	
     }
-
+    
+    /**
+     * Given a MazeState for the starting position and the possible end MazeStates
+     * searches through A* to find the optimal path from the start to closest end.
+     * 
+     * @param beginning A MazeState that specifies the start position.
+     * @param ends An ArrayList of MazeStates that specify the possible ending positions
+     * @param problem A MazeProblem that specifies the maze, actions, transitions.
+     * @return An ArrayList of Strings representing actions that lead from the
+     *         start to the least cost end, of the format: ["R", "R", "L", ...]
+     */
 	private static ArrayList<String> lowestCostPath(MazeState beginning, ArrayList<MazeState> ends, MazeProblem problem) {
 		Queue <SearchTreeNode> frontier = new PriorityQueue<>(100, new CostComparator());
 		Hashtable<String, MazeState> visited = new Hashtable<>();
@@ -67,6 +77,16 @@ public class Pathfinder {
 		return null;
 	}
 	
+	/**
+     * Given a current SearchTreeNode and child MazeState, generate the "travel" cost
+     * for the child SearchTreeNode, where the travel cost is the cost of the previous
+     * node, plus 3 if child is a Mud space and 1 if else.
+     * 
+     * @param current A SearchTreeNode that specifies the current node.
+     * @param problem A MazeProblem that specifies the maze, actions, transitions.
+     * @param child A MazeState of a specific child of the current SearchTreeNode
+     * @return An int representing the "travel cost" for the child node
+     */
 	private static int getHistoryCost (SearchTreeNode current, MazeProblem problem, MazeState child) {
 		int cost = current.totalCost;
 		
@@ -79,6 +99,14 @@ public class Pathfinder {
 		return cost;
 	}
 	
+	/**
+     * Given a current MazeState and the possible end MazeStates, provide the shortest possible
+     * value to the nearest end. Otherwise known as a Manhattan Heuristic
+     * 
+     * @param current A MazeState that specifies the current position.
+     * @param ends An ArrayList of possible end MazeStates
+     * @return An int representing the Manhattan Heuristic of the current MazeState
+     */
 	private static int getDistanceToEnd (MazeState current, ArrayList<MazeState> ends) {
 		int[] solutions = new int[ends.size()];
 		for (int i = 0; i < ends.size(); i++) {
@@ -88,7 +116,15 @@ public class Pathfinder {
 		return solutions[0];
 	}
 		
-
+	/**
+     * Given an end SearchTreeNode and beginning SearchTreeNode, travel up the tree
+     * using parent's generating and ArrayList of past actions
+     * 
+     * @param end A SearchTreeNode that specifies the last node in the path.
+     * @param beginning A SearchTreeNode that specifies the first node in the path
+     * @return An ArrayList of Strings representing actions that lead from the
+     *         first to the last node, of the format: ["R", "R", "L", ...]
+     */
     private static ArrayList<String> getSolution(SearchTreeNode end, SearchTreeNode beginning) {
         ArrayList<String> solution = new ArrayList<>();
         while (!end.state.equals(beginning.state)) {
@@ -119,6 +155,8 @@ class SearchTreeNode {
 	 * @param state  The MazeState (col, row) that this node represents.
 	 * @param action The action that *led to* this state / node.
 	 * @param parent Reference to parent SearchTreeNode in the Search Tree.
+	 * @param historyCost The cost of "traveling" to this state
+	 * @param heuristicCost The possible cost to the closest end
 	 */
 	SearchTreeNode(MazeState state, String action, SearchTreeNode parent, int historyCost, int heuristicCost) {
 		this.state = state;
