@@ -40,13 +40,13 @@ public class Pathfinder {
 
 	private static ArrayList<String> lowestCostPath(MazeState beginning, ArrayList<MazeState> ends, MazeProblem problem) {
 		Queue <SearchTreeNode> frontier = new PriorityQueue<>(100, new CostComparator());
-		ArrayList<MazeState> visited = new ArrayList<>();
+		Hashtable<String, MazeState> visited = new Hashtable<>();
 		SearchTreeNode first = new SearchTreeNode(beginning, null, null, 0, getDistanceToEnd(beginning, ends));
 		frontier.add(first);
 		
 		while(!frontier.isEmpty()) {
 			SearchTreeNode current = frontier.poll();
-			visited.add(current.state);
+			visited.put(current.state.toString(),current.state);
 			for (int i = 0; i < ends.size(); i++) {
 				if (current.state.equals(ends.get(i))) {
 					return getSolution(current, first);

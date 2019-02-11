@@ -62,6 +62,7 @@ public class PathfinderTests {
         ArrayList<String> solution = Pathfinder.solve(prob);
         
         int[] result = prob.testSolution(solution);
+        System.out.println(solution);
         assertEquals(1, result[0]);  // Test that result is a solution
         assertEquals(10, result[1]); // Ensure that the solution is optimal
     }
