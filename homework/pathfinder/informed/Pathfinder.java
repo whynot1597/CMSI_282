@@ -66,19 +66,24 @@ public class Pathfinder {
 		frontier.add(first);
 		
 		while(!frontier.isEmpty()) {
+			//Take off the first node in the Queue
 			SearchTreeNode current = frontier.poll();
 			visited.put(current.state.toString(),current.state);
+			
+			//Check if the current node is a goal state
 			for (int i = 0; i < ends.size(); i++) {
 				if (current.state.equals(ends.get(i))) {
 					return getSolution(current, first);
 				}
 			}
 			
+			//Generate the transitions from current node
 			Map<String, MazeState> children = problem.getTransitions(current.state);
 			
 			for (Map.Entry<String, MazeState> child : children.entrySet()) {
 				SearchTreeNode toAdd = new SearchTreeNode(child.getValue(), child.getKey(), current, getHistoryCost(current, problem, child.getValue()), getDistanceToEnd(child.getValue(), ends));
-				if (!(frontier.contains(toAdd) || visited.contains(toAdd.state))) {
+				//Add to Queue if unvisited node 
+				if (!visited.contains(toAdd.state)) {
 					frontier.add(toAdd);
 				}
 			}
@@ -99,13 +104,12 @@ public class Pathfinder {
      * @return An int representing the "travel cost" for the child node
      */
 	private static int getHistoryCost (SearchTreeNode current, MazeProblem problem, MazeState child) {
-		int cost = current.totalCost;
+		int cost = current.historyCost;
 		
-		for (int i = 0; i < problem.MUD_STATES.size(); i++) {
-			if (child.equals(problem.MUD_STATES.get(i))) {
-				cost += 2;
-			}
+		if (problem.MUD_STATES.contains(child)) {
+			cost += 2;
 		}
+		
 		cost += 1;
 		return cost;
 	}
@@ -180,14 +184,19 @@ class SearchTreeNode {
 
 }
 
+/**
+ * Cost Comparator that is used in the priority queue to evaluate priority
+ * of search tree nodes
+ */
 class CostComparator implements Comparator<SearchTreeNode> {
+	/**
+	 * Compares the total costs of two search tree nodes
+	 * 
+	 * @param x SearchTreeNode
+	 * @param y SearchTreeNode
+	 * @return int (-) x < y || (+) if x > y || 0 if x = y
+	 */
     public int compare(SearchTreeNode x, SearchTreeNode y) {
-        if (x.totalCost < y.totalCost) {
-            return -1;
-        }
-        if (x.totalCost > y.totalCost) {
-            return 1;
-        }
-        return 0;
+        return x.totalCost - y.totalCost;
     }
 }
