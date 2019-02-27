@@ -22,7 +22,8 @@ public class NimPlayer {
      *          of [1, MAX_REMOVAL]
      */
     public int choose (int remaining) {
-        throw new UnsupportedOperationException();
+        GameTreeNode root = new GameTreeNode(remaining, 0, true);
+        return -1;
     }
     
     /**
