@@ -1,6 +1,7 @@
 package nim;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -23,7 +24,8 @@ public class NimPlayer {
      */
     public int choose (int remaining) {
         GameTreeNode root = new GameTreeNode(remaining, 0, true);
-        int minimax = alphaBetaMinimax(root, Integer.MIN_VALUE, Integer.MAX_VALUE, root.isMax, null);
+        Map<GameTreeNode, Integer> visited = new HashMap<>();
+        int minimax = alphaBetaMinimax(root, Integer.MIN_VALUE, Integer.MAX_VALUE, root.isMax, visited);
         for (GameTreeNode child : root.children) {
         	if (child.score == minimax) {
         		return child.action;
@@ -46,19 +48,20 @@ public class NimPlayer {
     private int alphaBetaMinimax (GameTreeNode node, int alpha, int beta, boolean isMax, Map<GameTreeNode, Integer> visited) {
     	if (node.remaining == 0) {
     		node.score = (isMax ? 0 : 1);
+    		visited.put(node, node.score);
     		return node.score;
     	}
     	if (isMax) {
     		node.score = Integer.MIN_VALUE;
     		for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
     			GameTreeNode newChild = new GameTreeNode(node.remaining - i, i, !isMax);
-    			//if (!(visited.containsKey(newChild))) {
+    			if (!(visited.containsKey(newChild))) {
         			node.children.add(newChild);
-        			//visited.put(newChild, newChild.score);
-    			//}
+    			}
     		}
     		for (GameTreeNode child : node.children) {
     			node.score = Integer.max(node.score, alphaBetaMinimax(child, alpha, beta, !isMax, visited));
+    			visited.put(node, node.score);
     			alpha = Integer.max(alpha, node.score);
     			if (beta <= alpha) {
     				break;
@@ -69,13 +72,13 @@ public class NimPlayer {
     		node.score = Integer.MAX_VALUE;
     		for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
     			GameTreeNode newChild = new GameTreeNode(node.remaining - i, i, !isMax);
-    			//if (!(visited.containsKey(newChild))) {
+    			if (!(visited.containsKey(newChild))) {
         			node.children.add(newChild);
-        			//visited.put(newChild, newChild.score);
-    			//}
+    			}
     		}
     		for (GameTreeNode child : node.children) {
     			node.score = Integer.min(node.score, alphaBetaMinimax(child, alpha, beta, !isMax, visited));
+    			visited.put(node, node.score);
     			beta = Integer.min(beta, node.score);
     			if (beta <= alpha) {
     				break;
