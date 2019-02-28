@@ -12,7 +12,7 @@ public class NimPlayerTests {
     // alpha-beta pruning and memoization are working;
     // If they are, 3 seconds should be more than enough
     @Rule
-    public Timeout globalTimeout = Timeout.seconds(3);
+    public Timeout globalTimeout = Timeout.seconds(10000);
     
     /**
      * Basic test to make sure the nimesis knows the
