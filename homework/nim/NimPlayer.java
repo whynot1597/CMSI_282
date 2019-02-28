@@ -23,6 +23,7 @@ public class NimPlayer {
      */
     public int choose (int remaining) {
         GameTreeNode root = new GameTreeNode(remaining, 0, true);
+        alphaBetaMinimax(root, Integer.MIN_VALUE, Integer.MAX_VALUE, true, new Map<GameTreeNode, Integer>);
         return -1;
     }
     
@@ -38,7 +39,10 @@ public class NimPlayer {
      *          from the given node
      */
     private int alphaBetaMinimax (GameTreeNode node, int alpha, int beta, boolean isMax, Map<GameTreeNode, Integer> visited) {
-        throw new UnsupportedOperationException();
+    	for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
+        	node.children.add(new GameTreeNode(node.remaining - i, i, false));
+        }
+    	return -1;
     }
 
 }
