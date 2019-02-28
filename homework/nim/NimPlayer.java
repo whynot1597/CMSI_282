@@ -23,8 +23,7 @@ public class NimPlayer {
      */
     public int choose (int remaining) {
         GameTreeNode root = new GameTreeNode(remaining, 0, true);
-        alphaBetaMinimax(root, Integer.MIN_VALUE, Integer.MAX_VALUE, true, new Map<GameTreeNode, Integer>);
-        return -1;
+        alphaBetaMinimax(root, Integer.MIN_VALUE, Integer.MAX_VALUE, root.isMax, null);
     }
     
     /**
@@ -39,10 +38,45 @@ public class NimPlayer {
      *          from the given node
      */
     private int alphaBetaMinimax (GameTreeNode node, int alpha, int beta, boolean isMax, Map<GameTreeNode, Integer> visited) {
+    	if (node.remaining == 0) {
+    		return node.score;
+    	}
+    	int v;
+    	if (isMax) {
+    		v = Integer.MIN_VALUE;
+    		for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
+    			GameTreeNode newChild = new GameTreeNode(node.remaining - i, i, false);
+    			v = Integer.max(v, alphaBetaMinimax(newChild, alpha, beta, !isMax, visited));
+    			alpha = Integer.max(alpha, v);
+    			if (beta <= alpha) {
+    				break;
+    			}
+    		}
+    		return v;
+    	} else {
+    		v = Integer.MAX_VALUE;
+    		for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
+    			GameTreeNode newChild = new GameTreeNode(node.remaining - i, i, false);
+    			v = Integer.min(v, alphaBetaMinimax(newChild, alpha, beta, !isMax, visited));
+    			alpha = Integer.min(beta, v);
+    			if (beta <= alpha) {
+    				break;
+    			}
+    		}
+    		return v;    		
+    	}
+    	
+    	/*GameTreeNode newChild; 
     	for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
-        	node.children.add(new GameTreeNode(node.remaining - i, i, false));
-        }
-    	return -1;
+    		newChild = new GameTreeNode(node.remaining - i, i, false);
+    		if (!(visited.containsKey(newChild))) {
+    			node.children.add(newChild);
+    			alphaBetaMinimax(newChild, alpha, beta, !isMax, visited);
+    		} else {
+    			node.score = visited.get(newChild);
+    		}
+        }*/
+    	//return -1;
     }
 
 }
