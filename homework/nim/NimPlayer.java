@@ -51,44 +51,20 @@ public class NimPlayer {
     		visited.put(node, node.score);
     		return node.score;
     	}
-    	if (isMax) {
-    		node.score = Integer.MIN_VALUE;
-    		generateAllChildren(node);
-    		for (GameTreeNode child : node.children) {
-    			int childScore;
-    			if (visited.containsKey(child)) {
-    				childScore = visited.get(child);
-    			} else {
-    				childScore = alphaBetaMinimax(child, alpha, beta, !isMax, visited);
-    			}
-    			node.score = Integer.max(node.score, childScore);
-    			visited.put(node, node.score);
-    			alpha = Integer.max(alpha, node.score);
-    			if (beta <= alpha) {
-    				break;
-    			}
-    		}
-    		return node.score;
-    	} else {
-    		node.score = Integer.MAX_VALUE;
-    		generateAllChildren(node);
-    		for (GameTreeNode child : node.children) {
-    			int childScore;
-    			if (visited.containsKey(child)) {
-    				childScore = visited.get(child);
-    			} else {
-    				childScore = alphaBetaMinimax(child, alpha, beta, !isMax, visited);
-    			}
-    			node.score = Integer.min(node.score, childScore);
-    			visited.put(node, node.score);
-    			beta = Integer.min(beta, node.score);
-    			if (beta <= alpha) {
-    				break;
-    			}
-    		}
-    		return node.score;    		
-    	}
     	
+    	node.score = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+    	int testScore = isMax ? alpha : beta;
+    	generateAllChildren(node);
+    	for (GameTreeNode child : node.children) {
+            int childScore = visited.containsKey(child) ? visited.get(child) : alphaBetaMinimax(child, alpha, beta, !isMax, visited);
+            node.score = isMax ? Integer.max(node.score, childScore) : Integer.min(node.score, childScore);
+            testScore = isMax ? Integer.max(testScore, node.score) : Integer.min(testScore, node.score);
+            visited.put(node, node.score);
+            if (beta <= alpha) {
+                break;
+            }
+        }
+        return node.score;
     }
     
     private void generateAllChildren(GameTreeNode node) {
@@ -96,11 +72,6 @@ public class NimPlayer {
 			GameTreeNode newChild = new GameTreeNode(node.remaining - i, i, !node.isMax);
     		node.children.add(newChild);
 		}
-    }
-    
-    private int alphaBetaPruning(GameTreeNode node, int alpha, int beta, boolean isMax, Map<GameTreeNode, Integer> visited) {
-    	int testScore = (isMax ? alpha : beta);
-    	
     }
 
 }
