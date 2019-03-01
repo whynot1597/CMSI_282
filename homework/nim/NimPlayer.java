@@ -3,6 +3,8 @@ package nim;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Artificial Intelligence responsible for playing the game of Nim!
@@ -47,7 +49,7 @@ public class NimPlayer {
      */
     private int alphaBetaMinimax (GameTreeNode node, int alpha, int beta, boolean isMax, Map<GameTreeNode, Integer> visited) {
     	if (node.remaining == 0) {
-    		node.score = (isMax ? 0 : 1);
+    		node.score = isMax ? 0 : 1;
     		visited.put(node, node.score);
     		return node.score;
     	}

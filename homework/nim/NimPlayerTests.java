@@ -1,6 +1,9 @@
 package nim;
 
 import static org.junit.Assert.*;
+
+import java.lang.reflect.InvocationTargetException;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
