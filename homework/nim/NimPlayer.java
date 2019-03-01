@@ -55,12 +55,16 @@ public class NimPlayer {
     		node.score = Integer.MIN_VALUE;
     		for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
     			GameTreeNode newChild = new GameTreeNode(node.remaining - i, i, !isMax);
-    			if (!(visited.containsKey(newChild))) {
-        			node.children.add(newChild);
-    			}
+    			node.children.add(newChild);
     		}
     		for (GameTreeNode child : node.children) {
-    			node.score = Integer.max(node.score, alphaBetaMinimax(child, alpha, beta, !isMax, visited));
+    			int childScore;
+    			if (visited.containsKey(child)) {
+    				childScore = visited.get(child);
+    			} else {
+    				childScore = alphaBetaMinimax(child, alpha, beta, !isMax, visited);
+    			}
+    			node.score = Integer.max(node.score, childScore);
     			visited.put(node, node.score);
     			alpha = Integer.max(alpha, node.score);
     			if (beta <= alpha) {
@@ -72,12 +76,16 @@ public class NimPlayer {
     		node.score = Integer.MAX_VALUE;
     		for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
     			GameTreeNode newChild = new GameTreeNode(node.remaining - i, i, !isMax);
-    			if (!(visited.containsKey(newChild))) {
-        			node.children.add(newChild);
-    			}
+        		node.children.add(newChild);
     		}
     		for (GameTreeNode child : node.children) {
-    			node.score = Integer.min(node.score, alphaBetaMinimax(child, alpha, beta, !isMax, visited));
+    			int childScore;
+    			if (visited.containsKey(child)) {
+    				childScore = visited.get(child);
+    			} else {
+    				childScore = alphaBetaMinimax(child, alpha, beta, !isMax, visited);
+    			}
+    			node.score = Integer.min(node.score, childScore);
     			visited.put(node, node.score);
     			beta = Integer.min(beta, node.score);
     			if (beta <= alpha) {
@@ -87,17 +95,6 @@ public class NimPlayer {
     		return node.score;    		
     	}
     	
-    	/*GameTreeNode newChild; 
-    	for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
-    		newChild = new GameTreeNode(node.remaining - i, i, false);
-    		if (!(visited.containsKey(newChild))) {
-    			node.children.add(newChild);
-    			alphaBetaMinimax(newChild, alpha, beta, !isMax, visited);
-    		} else {
-    			node.score = visited.get(newChild);
-    		}
-        }*/
-    	//return -1;
     }
 
 }

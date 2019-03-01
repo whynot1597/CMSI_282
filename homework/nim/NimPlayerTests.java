@@ -99,5 +99,13 @@ public class NimPlayerTests {
         NimPlayer nimesis = new NimPlayer(3);
         assertEquals(1, nimesis.choose(1000));
     }
+    
+    @Test
+    public void NimPlayerTest_t8() {
+    	NimPlayer nimesis = new NimPlayer(1);
+    	assertEquals(1, nimesis.choose(5));
+    }
+    
+    
 
 }
