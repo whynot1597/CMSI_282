@@ -53,10 +53,7 @@ public class NimPlayer {
     	}
     	if (isMax) {
     		node.score = Integer.MIN_VALUE;
-    		for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
-    			GameTreeNode newChild = new GameTreeNode(node.remaining - i, i, !isMax);
-    			node.children.add(newChild);
-    		}
+    		generateAllChildren(node);
     		for (GameTreeNode child : node.children) {
     			int childScore;
     			if (visited.containsKey(child)) {
@@ -74,10 +71,7 @@ public class NimPlayer {
     		return node.score;
     	} else {
     		node.score = Integer.MAX_VALUE;
-    		for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
-    			GameTreeNode newChild = new GameTreeNode(node.remaining - i, i, !isMax);
-        		node.children.add(newChild);
-    		}
+    		generateAllChildren(node);
     		for (GameTreeNode child : node.children) {
     			int childScore;
     			if (visited.containsKey(child)) {
@@ -94,6 +88,18 @@ public class NimPlayer {
     		}
     		return node.score;    		
     	}
+    	
+    }
+    
+    private void generateAllChildren(GameTreeNode node) {
+    	for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
+			GameTreeNode newChild = new GameTreeNode(node.remaining - i, i, !node.isMax);
+    		node.children.add(newChild);
+		}
+    }
+    
+    private int alphaBetaPruning(GameTreeNode node, int alpha, int beta, boolean isMax, Map<GameTreeNode, Integer> visited) {
+    	int testScore = (isMax ? alpha : beta);
     	
     }
 
