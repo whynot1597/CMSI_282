@@ -1,5 +1,5 @@
 /************************************************************************************************
-*   Name:       Pathfinder.java
+*   Name:       NimPlayer.java
 *   Date:       03/01/2019
 *   @author:    Jeremy Goldberg
 *   @author:    Andrey Varakin
