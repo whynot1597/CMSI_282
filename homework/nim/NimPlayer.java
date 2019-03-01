@@ -1,10 +1,20 @@
+/************************************************************************************************
+*   Name:       Pathfinder.java
+*   Date:       03/01/2019
+*   @author:    Jeremy Goldberg
+*   @author:    Andrey Varakin
+*   Purpose:    Implement the choose(state) method that returns the integer indicating the action 
+*               the agent should take from the given state. I have generously also included the 
+*               GameTreeNode class to aid in this pursuit, as well as a signature for the a-b 
+*               pruning / minimax search component.
+*   @see:       http://forns.lmu.build/classes/spring-2019/cmsi-282/homework/hw2/homework-2.html
+**************************************************************************************************/
+
 package nim;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * Artificial Intelligence responsible for playing the game of Nim!
@@ -33,7 +43,7 @@ public class NimPlayer {
         		return child.action;
         	}
         }
-        return -1;
+        return -1; //Should never reach here
     }
     
     /**
@@ -56,9 +66,13 @@ public class NimPlayer {
     	
     	node.score = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
     	int testScore = isMax ? alpha : beta;
+    	
     	generateAllChildren(node);
+    	
     	for (GameTreeNode child : node.children) {
+    		//If previously generated child score, use that, else recurse
             int childScore = visited.containsKey(child) ? visited.get(child) : alphaBetaMinimax(child, alpha, beta, !isMax, visited);
+            //a-b pruning
             node.score = isMax ? Integer.max(node.score, childScore) : Integer.min(node.score, childScore);
             testScore = isMax ? Integer.max(testScore, node.score) : Integer.min(testScore, node.score);
             visited.put(node, node.score);
@@ -69,6 +83,11 @@ public class NimPlayer {
         return node.score;
     }
     
+    /**
+     * 
+     * @param   node   GameTreeNode to expand
+     * @return  a tree with all possible children of the given node
+     */
     private void generateAllChildren(GameTreeNode node) {
     	for (int i = 1; i <= MAX_REMOVAL && (node.remaining - i >= 0); i++) {
 			GameTreeNode newChild = new GameTreeNode(node.remaining - i, i, !node.isMax);
