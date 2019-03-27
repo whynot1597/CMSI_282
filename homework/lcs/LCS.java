@@ -15,7 +15,9 @@ public class LCS {
     // Shared Helper Methods
     // -----------------------------------------------
     
-    // [!] TODO: Add your shared helper methods here!
+    Set<String> collectSolution (String rStr, int r, String cStr, int c, int[][] memo) {
+    	throw new UnsupportedOperationException();
+    }
     
 
     // -----------------------------------------------
