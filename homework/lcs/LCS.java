@@ -22,9 +22,8 @@ public class LCS {
     		return new HashSet<String>(Arrays.asList(""));
     	}
     	if (rStr.charAt(r - 1) == cStr.charAt(c - 1)) {
-    		Set<String> continuing = collectSolution(rStr, r - 1, cStr, c - 1, memo);
     		Set<String> result = new HashSet<String>();
-    		for (String s : continuing) {
+    		for (String s : collectSolution(rStr, r - 1, cStr, c - 1, memo)) {
     			result.add(s + rStr.charAt(r - 1));
     		}
     		return result;
