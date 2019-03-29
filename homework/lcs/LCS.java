@@ -64,7 +64,7 @@ public class LCS {
     	int rStrInd = r - 1;
     	int cStrInd = c - 1;
     	//Case same char: Add the matched letter to all substrings in the set returned by recursing top-left
-    	if (rStr.charAt(rStrInd) == cStr.charAt(cStrInd) ) {
+    	if (rStr.charAt(rStrInd) == cStr.charAt(cStrInd)) {
     		return appendChar(rStr.charAt(rStrInd), collectSolution(rStr, rStrInd, cStr, cStrInd));
     	}
     	Set<String> result = new HashSet<String>();
