@@ -1,3 +1,13 @@
+/************************************************************************************************
+*   Name:       LCS.java
+*   Date:       03/29/2019
+*   @author:    Jeremy Goldberg
+*   @author:    Andrey Varakin
+*   Purpose:    Implement the Longest Common Subsequence algorithm from both the bottom-up and 
+*    			top-down dynamic programming approaches. Finds all LCS between two Strings
+*   @see:       http://forns.lmu.build/classes/spring-2019/cmsi-282/homework/hw3/homework-3.html
+**************************************************************************************************/
+
 package lcs;
 
 import java.util.Arrays;
