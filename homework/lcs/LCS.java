@@ -87,7 +87,7 @@ public class LCS {
      *         [Side Effect] sets memoCheck to refer to table  
      */
     public static Set<String> topDownLCS (String rStr, String cStr) {
-        throw new UnsupportedOperationException();
+    	return collectSolution(rStr, rStr.length(), cStr, cStr.length(), memoCheck);
     }
     
     // [!] TODO: Add any top-down specific helpers here!
