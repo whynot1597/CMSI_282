@@ -17,6 +17,16 @@ public class LCS {
     // Shared Helper Methods
     // -----------------------------------------------
     
+    /**
+     * Given two strings and a table collects a Set of longest common substrings
+     * @param rStr The String found along the table's rows
+     * @param r    The index of the current row
+     * @param cStr The String found along the table's cols
+     * @param c    The index of the current column
+     * @param memo The table of corresponding to longest common substring lengths
+     * @return The longest common subsequences between rStr and cStr +
+     *         [Side Effect] sets memoCheck to refer to table
+     */
     private static Set<String> collectSolution (String rStr, int r, String cStr, int c, int[][] memo) {
     	if (r == 0 || c == 0) {
     		return new HashSet<String>(Arrays.asList(""));
@@ -38,6 +48,15 @@ public class LCS {
     	return result;
     }
     
+    /**
+     * Given two strings and index of char at each string returns true
+     * if same char else false
+     * @param index1 index for char in rStr
+     * @param index2 index for char in cStr
+     * @param rStr   The String found along the table's rows
+     * @param cStr   The String found along the table's cols
+     * @return bool  Same char
+     */
     private static boolean checkMatchedLetters(int index1, int index2, String rStr, String cStr) {
     	return rStr.charAt(index1) == cStr.charAt(index2);
     }
@@ -68,10 +87,7 @@ public class LCS {
         	}
         }
         return collectSolution(rStr, rStr.length(), cStr, cStr.length(), memoCheck);
-    }
-    
-    // [!] TODO: Add any bottom-up specific helpers here!
-    
+    }    
     
     // -----------------------------------------------
     // Top-Down LCS
@@ -87,10 +103,34 @@ public class LCS {
      *         [Side Effect] sets memoCheck to refer to table  
      */
     public static Set<String> topDownLCS (String rStr, String cStr) {
+    	memoCheck = new int[rStr.length() + 1][cStr.length() + 1];
+    	lcsRecursiveHelper(rStr, rStr.length(), cStr, cStr.length(), memoCheck);
     	return collectSolution(rStr, rStr.length(), cStr, cStr.length(), memoCheck);
     }
     
-    // [!] TODO: Add any top-down specific helpers here!
+    /**
+     * Completes the memoization table using top-down dynamic programming
+     * @param rStr The String along the memoization table's rows
+     * @param rInd The current letter's index in rStr
+     * @param cStr The String along the memoization table's cols
+     * @param cInd The current letter's index in cStr
+     * @param memo The memoization table
+     * @return void Completes TDDP table
+     */
+    static void lcsRecursiveHelper (String rStr, int rInd, String cStr, int cInd, int[][] memo) {
+    	if (rInd == 0 || cInd == 0) {
+    		return;
+    	}
+    	if (rStr.charAt(rInd - 1) == cStr.charAt(cInd - 1)) {
+    		lcsRecursiveHelper(rStr, rInd - 1, cStr, cInd - 1, memo);
+    		memo[rInd][cInd] = memo[rInd - 1][cInd - 1] + 1;
+    		return;
+    	}
+    	lcsRecursiveHelper(rStr, rInd - 1, cStr, cInd, memo);
+    	lcsRecursiveHelper(rStr, rInd, cStr, cInd - 1, memo);
+    	memo[rInd][cInd] = Math.max(memo[rInd - 1][cInd], memo[rInd][cInd - 1]);
+    	return;
+    }
     
     
 }
