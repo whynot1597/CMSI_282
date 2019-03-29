@@ -37,25 +37,31 @@ public class LCS {
      * @return The longest common subsequences between rStr and cStr +
      *         [Side Effect] sets memoCheck to refer to table
      */
-    private static Set<String> collectSolution (String rStr, int r, String cStr, int c, int[][] memo) {
+    private static Set<String> collectSolution(String rStr, int r, String cStr, int c, int[][] memo) {
     	if (r == 0 || c == 0) {
     		return new HashSet<String>(Arrays.asList(""));
     	}
-    	if (rStr.charAt(r - 1) == cStr.charAt(c - 1)) {
-    		Set<String> result = new HashSet<String>();
-    		for (String s : collectSolution(rStr, r - 1, cStr, c - 1, memo)) {
-    			result.add(s + rStr.charAt(r - 1));
-    		}
-    		return result;
+    	int rStrInd = r - 1;
+    	int cStrInd = c - 1; 
+    	if (rStr.charAt(rStrInd) == cStr.charAt(cStrInd)) {
+    		return appendChar(rStr.charAt(rStrInd), collectSolution(rStr, rStrInd, cStr, cStrInd, memo));
     	}
     	Set<String> result = new HashSet<String>();
-    	if (memo[r][c - 1] >= memo[r - 1][c]) {
-    		result.addAll(collectSolution(rStr, r, cStr, c - 1, memo));
+    	if (memo[r][cStrInd] >= memo[rStrInd][c]) {
+    		result.addAll(collectSolution(rStr, r, cStr, cStrInd, memo));
     	}
-    	if (memo[r - 1][c] >= memo[r][c - 1]){
-    		result.addAll(collectSolution(rStr, r - 1, cStr, c, memo));
+    	if (memo[rStrInd][c] >= memo[r][cStrInd]){
+    		result.addAll(collectSolution(rStr, rStrInd, cStr, c, memo));
     	}
     	return result;
+    }
+    
+    private static Set<String> appendChar(char c, Set<String> solutions) {
+        Set<String> result = new HashSet<String>();
+        for (String s : solutions) {
+            result.add(s + c);
+        }
+        return result;
     }
     
     /**
