@@ -28,6 +28,25 @@ public class LCS {
     // -----------------------------------------------
     
     /**
+     * Fills a table by either top-down or bottom-up and returns the LCSs
+     * of the given strings
+     * @param rStr   The String found along the table's rows
+     * @param cStr   The String found along the table's cols
+     * @param isBU   true if bottom-up method, false if top-down
+     * @return The longest common subsequence between rStr and cStr +
+     *         [Side Effect] sets memoCheck to refer to table
+     */
+    private static Set<String> executeLCS(String rStr, String cStr, boolean isBU) {
+        memoCheck = new int[rStr.length() + 1][cStr.length() + 1];
+        if (isBU) {
+            fillTableBU(rStr, cStr);
+        } else {
+            fillTableTD(rStr, cStr);
+        }
+        return collectSolution(rStr, rStr.length(), cStr, cStr.length()); 
+    }
+    
+    /**
      * Given two strings and a table collects a Set of longest common substrings
      * @param rStr The String found along the table's rows
      * @param r    The index of the current row
@@ -37,25 +56,31 @@ public class LCS {
      * @return The longest common subsequences between rStr and cStr +
      *         [Side Effect] sets memoCheck to refer to table
      */
-    private static Set<String> collectSolution(String rStr, int r, String cStr, int c, int[][] memo) {
+    private static Set<String> collectSolution(String rStr, int r, String cStr, int c) {
     	if (r == 0 || c == 0) {
     		return new HashSet<String>(Arrays.asList(""));
     	}
     	int rStrInd = r - 1;
     	int cStrInd = c - 1; 
     	if (rStr.charAt(rStrInd) == cStr.charAt(cStrInd)) {
-    		return appendChar(rStr.charAt(rStrInd), collectSolution(rStr, rStrInd, cStr, cStrInd, memo));
+    		return appendChar(rStr.charAt(rStrInd), collectSolution(rStr, rStrInd, cStr, cStrInd));
     	}
     	Set<String> result = new HashSet<String>();
-    	if (memo[r][cStrInd] >= memo[rStrInd][c]) {
-    		result.addAll(collectSolution(rStr, r, cStr, cStrInd, memo));
+    	if (memoCheck[r][cStrInd] >= memoCheck[rStrInd][c]) {
+    		result.addAll(collectSolution(rStr, r, cStr, cStrInd));
     	}
-    	if (memo[rStrInd][c] >= memo[r][cStrInd]){
-    		result.addAll(collectSolution(rStr, rStrInd, cStr, c, memo));
+    	if (memoCheck[rStrInd][c] >= memoCheck[r][cStrInd]){
+    		result.addAll(collectSolution(rStr, rStrInd, cStr, c));
     	}
     	return result;
     }
     
+    /**
+     * Appends a single char to the end of every string in the given set
+     * @param c         char to be appended
+     * @param solutions Set of strings
+     * @return new set of strings with char c append to each one
+     */
     private static Set<String> appendChar(char c, Set<String> solutions) {
         Set<String> result = new HashSet<String>();
         for (String s : solutions) {
@@ -83,6 +108,17 @@ public class LCS {
     // -----------------------------------------------
     
     /**
+     * Calls executeLCS to fill table and return set of LCSs of give strings
+     * @param rStr The String found along the table's rows
+     * @param cStr The String found along the table's cols
+     * @return The longest common subsequence between rStr and cStr +
+     *         [Side Effect] sets memoCheck to refer to table
+     */
+    public static Set<String> bottomUpLCS (String rStr, String cStr) {
+        return executeLCS(rStr, cStr, true);
+    }
+    
+    /**
      * Bottom-up dynamic programming approach to the LCS problem, which
      * solves larger and larger subproblems iterative using a tabular
      * memoization structure.
@@ -91,23 +127,35 @@ public class LCS {
      * @return The longest common subsequence between rStr and cStr +
      *         [Side Effect] sets memoCheck to refer to table
      */
-    public static Set<String> bottomUpLCS (String rStr, String cStr) {
-        memoCheck = new int[rStr.length() + 1][cStr.length() + 1];
-        for (int i = 1; i < rStr.length() + 1; i++) {
-        	for (int j = 1; j < cStr.length() + 1; j++) {
-        		if (checkMatchedLetters(i - 1, j - 1, rStr, cStr)) {
-                	memoCheck[i][j] = memoCheck[i - 1][j - 1] + 1;
+    private static void fillTableBU (String rStr, String cStr) {
+        for (int i = 1, rStrInd = 0; rStrInd < rStr.length(); i++, rStrInd++) {
+            for (int j = 1, cStrInd = 0; cStrInd < cStr.length(); j++, cStrInd++) {
+                //Case same char: add 1 from top left cell
+                if (checkMatchedLetters(rStrInd, cStrInd, rStr, cStr)) {
+                    memoCheck[i][j] = memoCheck[rStrInd][cStrInd] + 1;
+                //Case diff char: take max of cell above and cell to left
                 } else {
-                	memoCheck[i][j] = Math.max(memoCheck[i - 1][j], memoCheck[i][j - 1]);
+                    memoCheck[i][j] = Math.max(memoCheck[rStrInd][j], memoCheck[i][cStrInd]);
                 }
-        	}
+            }
         }
-        return collectSolution(rStr, rStr.length(), cStr, cStr.length(), memoCheck);
-    }    
+        return;
+    }
     
     // -----------------------------------------------
     // Top-Down LCS
     // -----------------------------------------------
+    
+    /**
+     * Calls executeLCS to fill table and return set of LCSs of give strings
+     * @param rStr The String found along the table's rows
+     * @param cStr The String found along the table's cols
+     * @return The longest common subsequence between rStr and cStr +
+     *         [Side Effect] sets memoCheck to refer to table
+     */
+    public static Set<String> topDownLCS (String rStr, String cStr) {
+        return executeLCS(rStr, cStr, false);
+    }
     
     /**
      * Top-down dynamic programming approach to the LCS problem, which
@@ -118,10 +166,9 @@ public class LCS {
      * @return The longest common subsequence between rStr and cStr +
      *         [Side Effect] sets memoCheck to refer to table  
      */
-    public static Set<String> topDownLCS (String rStr, String cStr) {
-    	memoCheck = new int[rStr.length() + 1][cStr.length() + 1];
-    	lcsRecursiveHelper(rStr, rStr.length(), cStr, cStr.length(), memoCheck);
-    	return collectSolution(rStr, rStr.length(), cStr, cStr.length(), memoCheck);
+    private static void fillTableTD(String rStr, String cStr) {
+        lcsRecursiveHelper(rStr, rStr.length(), cStr, cStr.length());
+        return;
     }
     
     /**
@@ -133,18 +180,23 @@ public class LCS {
      * @param memo The memoization table
      * @return void Completes TDDP table
      */
-    static void lcsRecursiveHelper (String rStr, int rInd, String cStr, int cInd, int[][] memo) {
-    	if (rInd == 0 || cInd == 0 || memo[rInd][cInd] != 0) {
+    static void lcsRecursiveHelper (String rStr, int rInd, String cStr, int cInd) {
+        //Base Case: reach gutter or previously computed cell
+    	if (rInd == 0 || cInd == 0 || memoCheck[rInd][cInd] != 0) {
     		return;
     	}
-    	if (rStr.charAt(rInd - 1) == cStr.charAt(cInd - 1)) {
-    		lcsRecursiveHelper(rStr, rInd - 1, cStr, cInd - 1, memo);
-    		memo[rInd][cInd] = memo[rInd - 1][cInd - 1] + 1;
+    	int rStrInd = rInd - 1;
+    	int cStrInd = cInd - 1;
+    	//Case: same char: add 1 from recursed on top left cell
+    	if (rStr.charAt(rStrInd) == cStr.charAt(cStrInd)) {
+    		lcsRecursiveHelper(rStr, rStrInd, cStr, cStrInd);
+    		memoCheck[rInd][cInd] = memoCheck[rStrInd][cStrInd] + 1;
     		return;
     	}
-    	lcsRecursiveHelper(rStr, rInd - 1, cStr, cInd, memo);
-    	lcsRecursiveHelper(rStr, rInd, cStr, cInd - 1, memo);
-    	memo[rInd][cInd] = Math.max(memo[rInd - 1][cInd], memo[rInd][cInd - 1]);
+    	//Case diff char: take max of recursed top and recursed left cell
+    	lcsRecursiveHelper(rStr, rStrInd, cStr, cInd);
+    	lcsRecursiveHelper(rStr, rInd, cStr, cStrInd);
+    	memoCheck[rInd][cInd] = Math.max(memoCheck[rStrInd][cInd], memoCheck[rInd][cStrInd]);
     	return;
     }
     
