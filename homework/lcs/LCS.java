@@ -39,10 +39,10 @@ public class LCS {
     		return result;
     	}
     	Set<String> result = new HashSet<String>();
-    	if (memo[r][c - 1] >= memo[c][r - 1]) {
+    	if (memo[r][c - 1] >= memo[r - 1][c]) {
     		result.addAll(collectSolution(rStr, r, cStr, c - 1, memo));
     	}
-    	if (memo[r - 1][c] >= memo[c - 1][r]){
+    	if (memo[r - 1][c] >= memo[r][c - 1]){
     		result.addAll(collectSolution(rStr, r - 1, cStr, c, memo));
     	}
     	return result;
@@ -118,7 +118,7 @@ public class LCS {
      * @return void Completes TDDP table
      */
     static void lcsRecursiveHelper (String rStr, int rInd, String cStr, int cInd, int[][] memo) {
-    	if (rInd == 0 || cInd == 0) {
+    	if (rInd == 0 || cInd == 0 || memo[rInd][cInd] != 0) {
     		return;
     	}
     	if (rStr.charAt(rInd - 1) == cStr.charAt(cInd - 1)) {
