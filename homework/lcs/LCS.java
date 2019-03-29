@@ -57,18 +57,22 @@ public class LCS {
      *         [Side Effect] sets memoCheck to refer to table
      */
     private static Set<String> collectSolution(String rStr, int r, String cStr, int c) {
+        //Base Case: currently in gutter
     	if (r == 0 || c == 0) {
     		return new HashSet<String>(Arrays.asList(""));
     	}
     	int rStrInd = r - 1;
-    	int cStrInd = c - 1; 
+    	int cStrInd = c - 1;
+    	//Case same char: Add the matched letter to all substrings in the set returned by recursing top-left
     	if (rStr.charAt(rStrInd) == cStr.charAt(cStrInd)) {
     		return appendChar(rStr.charAt(rStrInd), collectSolution(rStr, rStrInd, cStr, cStrInd));
     	}
     	Set<String> result = new HashSet<String>();
+    	//Case Mismatched Letters: if cell to left is greater than or equal to cell above
     	if (memoCheck[r][cStrInd] >= memoCheck[rStrInd][c]) {
     		result.addAll(collectSolution(rStr, r, cStr, cStrInd));
     	}
+    	//Case Mismatched Letters: if cell above is greater than or equal to cell to left
     	if (memoCheck[rStrInd][c] >= memoCheck[r][cStrInd]){
     		result.addAll(collectSolution(rStr, rStrInd, cStr, c));
     	}
