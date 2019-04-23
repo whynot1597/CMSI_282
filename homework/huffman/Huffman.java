@@ -1,6 +1,7 @@
 package huffman;
 
 import java.util.Map;
+import java.util.PriorityQueue;
 
 /**
  * Huffman instances provide reusable Huffman Encoding Maps for
@@ -26,7 +27,25 @@ public class Huffman {
      *        differ.
      */
     Huffman (String corpus) {
-        // TODO!
+        PriorityQueue<HuffNode> trieQueue = new PriorityQueue<HuffNode>();
+        for (int i = 0; i < corpus.length(); i++) {
+        	char toTest = corpus.charAt(i);
+        	Boolean contains = false;
+        	for (HuffNode testNode : trieQueue) {
+        		if (testNode.character == toTest) {
+        			contains = true;
+        		}
+        	}
+        	if (!contains) {
+        		int count = 0;
+        		for (int j = i; j < corpus.length(); j++) {
+        			if (corpus.charAt(j) == toTest) {
+        				count++;
+        			}
+        		}
+        		trieQueue.add(new HuffNode(toTest, count));
+        	}
+        }
     }
     
     
