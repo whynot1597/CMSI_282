@@ -46,6 +46,7 @@ public class Huffman {
         		trieQueue.add(new HuffNode(toTest, count));
         	}
         }
+        createTrie(trieQueue);
     }
     
     
@@ -86,6 +87,18 @@ public class Huffman {
      */
     public String decompress (byte[] compressedMsg) {
         throw new UnsupportedOperationException();
+    }
+    
+    private void createTrie(PriorityQueue<HuffNode> trieQueue) {
+    	while (trieQueue.size() > 1) {
+    		HuffNode first = trieQueue.poll();
+    		HuffNode second = trieQueue.poll();
+    		HuffNode toAdd = new HuffNode(null , first.count + second.count);
+    		toAdd.right = first;
+    		toAdd.left = second;
+    		trieQueue.add(toAdd);
+    	}
+    	trieRoot = trieQueue.poll();
     }
     
     
