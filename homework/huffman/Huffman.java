@@ -47,6 +47,7 @@ public class Huffman {
         	}
         }
         createTrie(trieQueue);
+        createMap(trieRoot);
     }
     
     
@@ -93,7 +94,7 @@ public class Huffman {
     	while (trieQueue.size() > 1) {
     		HuffNode first = trieQueue.poll();
     		HuffNode second = trieQueue.poll();
-    		HuffNode toAdd = new HuffNode(null , first.count + second.count);
+    		HuffNode toAdd = new HuffNode('\0' , first.count + second.count);
     		toAdd.right = first;
     		toAdd.left = second;
     		trieQueue.add(toAdd);
@@ -101,6 +102,19 @@ public class Huffman {
     	trieRoot = trieQueue.poll();
     }
     
+    private void createMap(HuffNode trieRoot) {
+    	String code = "";
+    	generateCode(trieRoot, code);
+    }
+    
+    private void generateCode(HuffNode currentNode, String currentCode) {
+    	if (currentNode.isLeaf()) {
+    		encodingMap.put(currentNode.character, currentCode);
+    	} else {
+    		generateCode(currentNode.left, currentCode + "0");
+    		generateCode(currentNode.right, currentCode + "1");
+    	}
+    }
     
     // -----------------------------------------------
     // Huffman Trie
