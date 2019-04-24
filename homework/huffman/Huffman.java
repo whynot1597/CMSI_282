@@ -109,6 +109,12 @@ public class Huffman {
         
     }
     
+    /**
+     * Creates Trie Priority Queue that is used to build the Trie.
+     * Stores the created trie queue in trieQueue.
+     * @param String corpus string used to build trie
+     * @return void
+     */
     private void createTrieQueue (String corpus) {
     	trieQueue = new PriorityQueue<HuffNode>();
         for (int i = 0; i < corpus.length(); i++) {
@@ -132,6 +138,13 @@ public class Huffman {
         }
     }
     
+    /**
+     * Creates Trie using the given priority queue.
+     * Stores the created trie root in trieRoot.
+     * @param PriorityQueue<HuffNode> trieQueuetrieQueue priority 
+     * 								  queue used to build trie
+     * @return void
+     */
     private void createTrie(PriorityQueue<HuffNode> trieQueue) {
     	while (trieQueue.size() > 1) {
     		HuffNode first = trieQueue.poll();
@@ -144,12 +157,27 @@ public class Huffman {
     	trieRoot = trieQueue.poll();
     }
     
+    /**
+     * Creates encoding map using the given trie.
+     * Stores the created encoding map in encodingMap.
+     * @param HuffNode trieRoot the root of the trie
+     * @return void
+     */
     private void createMap(HuffNode trieRoot) {
     	encodingMap = new HashMap<Character, String>();
     	String code = "";
     	generateCode(trieRoot, code);
     }
     
+    /**
+     * Recursive function to find the codes for the encoding map
+     * Uses depth-first traversal
+     * @param HuffNode currentNode the current node to be investigated
+     * @param String currentCode the code used to get to the current node with
+     * 							 0 indicating a step to the left and 1 indicating
+     * 							 a step to the right
+     * @return void
+     */
     private void generateCode(HuffNode currentNode, String currentCode) {
     	if (currentNode.isLeaf()) {
     		encodingMap.put(currentNode.character, currentCode);
@@ -159,6 +187,12 @@ public class Huffman {
     	}
     }
     
+    /**
+     * Finds a key given a value in a set
+     * @param String value the value whose key needs to be found
+     * @param Set<Map.Entry<Character, String>> entrySet the set of keys and values
+     * @return char the needed key or the empty char
+     */
     private char getKey(String value, Set<Map.Entry<Character, String>> entrySet) {
     	for (Map.Entry<Character, String> entry : entrySet) {
     		if (entry.getValue().equals(value)) {
