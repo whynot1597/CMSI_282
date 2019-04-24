@@ -65,7 +65,7 @@ public class Huffman {
     	for (int j = 0; j + 7 < toAdd.length(); j += 8) {
     		String stringByte = toAdd.substring(j, j + 8);
     		int toAddByte = Integer.parseInt(stringByte, 2);
-    		answer.write((byte) toAddByte);
+    		answer.write(toAddByte);
     	}
     	return answer.toByteArray();
     }
