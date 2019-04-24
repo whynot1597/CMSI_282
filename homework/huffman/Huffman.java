@@ -19,6 +19,7 @@ public class Huffman {
 
     private HuffNode trieRoot;
     private Map<Character, String> encodingMap;
+    private PriorityQueue<HuffNode> trieQueue;
     
     /**
      * Creates the Huffman Trie and Encoding Map using the character
@@ -30,27 +31,8 @@ public class Huffman {
      *        differ.
      */
     Huffman (String corpus) {
-        PriorityQueue<HuffNode> trieQueue = new PriorityQueue<HuffNode>();
-        for (int i = 0; i < corpus.length(); i++) {
-        	char toTest = corpus.charAt(i);
-        	Boolean contains = false;
-        	for (HuffNode testNode : trieQueue) {
-        		if (testNode.character == toTest) {
-        			contains = true;
-        		}
-        	}
-        	if (!contains) {
-        		int count = 0;
-        		for (int j = i; j < corpus.length(); j++) {
-        			if (corpus.charAt(j) == toTest) {
-        				count++;
-        			}
-        		}
-        		trieQueue.add(new HuffNode(toTest, count));
-        	}
-        }
+    	createTrieQueue(corpus);
         createTrie(trieQueue);
-        encodingMap = new HashMap<Character, String>();
         createMap(trieRoot);
     }
     
@@ -127,6 +109,29 @@ public class Huffman {
         
     }
     
+    private void createTrieQueue (String corpus) {
+    	trieQueue = new PriorityQueue<HuffNode>();
+        for (int i = 0; i < corpus.length(); i++) {
+        	char toTest = corpus.charAt(i);
+        	Boolean contains = false;
+        	for (HuffNode testNode : trieQueue) {
+        		if (testNode.character == toTest) {
+        			contains = true;
+        			break;
+        		}
+        	}
+        	if (!contains) {
+        		int count = 0;
+        		for (int j = i; j < corpus.length(); j++) {
+        			if (corpus.charAt(j) == toTest) {
+        				count++;
+        			}
+        		}
+        		trieQueue.add(new HuffNode(toTest, count));
+        	}
+        }
+    }
+    
     private void createTrie(PriorityQueue<HuffNode> trieQueue) {
     	while (trieQueue.size() > 1) {
     		HuffNode first = trieQueue.poll();
@@ -140,6 +145,7 @@ public class Huffman {
     }
     
     private void createMap(HuffNode trieRoot) {
+    	encodingMap = new HashMap<Character, String>();
     	String code = "";
     	generateCode(trieRoot, code);
     }
