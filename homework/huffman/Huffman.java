@@ -1,7 +1,10 @@
 package huffman;
 
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 /**
  * Huffman instances provide reusable Huffman Encoding Maps for
@@ -47,6 +50,7 @@ public class Huffman {
         	}
         }
         createTrie(trieQueue);
+        encodingMap = new HashMap<Character, String>();
         createMap(trieRoot);
     }
     
@@ -67,7 +71,21 @@ public class Huffman {
      *         0-padding on the final byte.
      */
     public byte[] compress (String message) {
-        throw new UnsupportedOperationException();
+    	ByteArrayOutputStream answer = new ByteArrayOutputStream();
+    	answer.write(message.length());
+    	String toAdd = "";
+    	for (int i = 0; i < message.length(); i++) {
+    		toAdd = toAdd + encodingMap.get(message.charAt(i));
+    	}
+    	while (toAdd.length() % 8 != 0) {
+    		toAdd = toAdd + "0";
+    	}
+    	for (int j = 0; j + 7 < toAdd.length(); j += 8) {
+    		String stringByte = toAdd.substring(j, j + 8);
+    		int toAddByte = Integer.parseInt(stringByte, 2);
+    		answer.write((byte) toAddByte);
+    	}
+    	return answer.toByteArray();
     }
     
     
@@ -87,7 +105,26 @@ public class Huffman {
      * @return Decompressed String representation of the compressed bytecode message.
      */
     public String decompress (byte[] compressedMsg) {
-        throw new UnsupportedOperationException();
+        int size = compressedMsg[0];
+        String byteString = "";
+        for (int i = 1; i < compressedMsg.length; i++) {
+        	byte b = compressedMsg[i];
+        	byteString = byteString + String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
+        }
+        String toAdd = "";
+        String answer = "";
+        
+        Set<Map.Entry<Character, String>> entrySet = encodingMap.entrySet();
+        
+        for (int i = 0; i < byteString.length() && answer.length() < size; i++) {
+        	toAdd = toAdd + byteString.charAt(i);
+        	if (encodingMap.containsValue(toAdd)) {
+        		answer = answer + getKey(toAdd, entrySet);
+        		toAdd = "";
+        	}
+        }
+        return answer;
+        
     }
     
     private void createTrie(PriorityQueue<HuffNode> trieQueue) {
@@ -95,8 +132,8 @@ public class Huffman {
     		HuffNode first = trieQueue.poll();
     		HuffNode second = trieQueue.poll();
     		HuffNode toAdd = new HuffNode('\0' , first.count + second.count);
-    		toAdd.right = first;
-    		toAdd.left = second;
+    		toAdd.right = second;
+    		toAdd.left = first;
     		trieQueue.add(toAdd);
     	}
     	trieRoot = trieQueue.poll();
@@ -114,6 +151,15 @@ public class Huffman {
     		generateCode(currentNode.left, currentCode + "0");
     		generateCode(currentNode.right, currentCode + "1");
     	}
+    }
+    
+    private char getKey(String value, Set<Map.Entry<Character, String>> entrySet) {
+    	for (Map.Entry<Character, String> entry : entrySet) {
+    		if (entry.getValue().equals(value)) {
+    			return entry.getKey();
+    		}
+    	}
+    	return '\0';
     }
     
     // -----------------------------------------------
