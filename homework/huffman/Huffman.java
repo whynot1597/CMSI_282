@@ -1,3 +1,18 @@
+/************************************************************************************************
+*   Name:       Huffman.java
+*   Date:       04/24/2019
+*   @author:    Jeremy Goldberg
+*   @author:    Andrey Varakin
+*   Purpose:    These two primary operations proceed as follows:
+*               Compression: finding the distribution of characters in the corpus, using these 
+*               frequencies to find the Huffman Trie, after which we construct the Encoding Map 
+*               that performs the compression.
+*               Decompression: given some bitstring (in this assignment, some sequence of bytes 
+*               each 8 bits in length), decode the original corpus using a Huffman Trie.
+*   @see:       http://forns.lmu.build/classes/spring-2019/cmsi-282/homework/hw4/homework-4.html
+**************************************************************************************************/
+
+
 package huffman;
 
 import java.io.ByteArrayOutputStream;
