@@ -95,19 +95,14 @@ public class CSP {
     		for (LocalDate date = rangeStart; !date.isAfter(rangeEnd); date = date.plusDays(1)) {
     			boolean sat = true;
     			for (DateConstraint c : constraints) {
-    				if (c.L_VAL == currentMeeting) {
-    					if (c.arity() == 1) {
-    						LocalDate rightDate = ((UnaryDateConstraint) c).R_VAL;
-        					if(!testConstraint(date, rightDate, c)) {
+    				if (c.L_VAL == currentMeeting && 
+    				        c.arity() == 1 && 
+    				        !testConstraint(date, ((UnaryDateConstraint) c).R_VAL, c)) {
         						sat = false;
         						break;
-        					}
-    					}
     				}
     			}
-    			if (sat) {
-					domain.add(date);
-				}
+    			if (sat) { domain.add(date); };
     		}
     	}
     	
