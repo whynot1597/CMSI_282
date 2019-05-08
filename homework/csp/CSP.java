@@ -1,9 +1,13 @@
 package csp;
 
+import static org.junit.Assert.fail;
+
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * CSP: Calendar Satisfaction Problem Solver
@@ -25,25 +29,73 @@ public class CSP {
      *         indexed by the variable they satisfy, or null if no solution exists.
      */
     public static List<LocalDate> solve (int nMeetings, LocalDate rangeStart, LocalDate rangeEnd, Set<DateConstraint> constraints) {
-        List<LocalDate> solution = new ArrayList<LocalDate>();
-        solution = backtrackingTree(solution, nMeetings, rangeStart, rangeEnd, constraints);
+        List<DateVar> variables = new ArrayList<DateVar>();
+        for (int i = 0; i < nMeetings; i++) {
+            DateVar meeting = new DateVar(rangeStart, rangeEnd);
+            variables.add(meeting);
+        }
+        variables = pruneDomains(variables, constraints);
+        List<LocalDate> solution = backtrackingTree(variables, constraints);
         return solution;
     }
     
-    private static List<LocalDate> backtrackingTree (List<LocalDate> assignment, int nMeetings, LocalDate rangeStart, LocalDate rangeEnd, Set<DateConstraint> constraints) {
-    	if (assignment.size() == nMeetings) {
-    		return assignment;
+    private static List<DateVar> pruneDomains(List<DateVar> variables, Set<DateConstraint> constraints) {
+        for (DateVar meeting : variables) {
+            for (int i = 0; i < meeting.domain.size(); i++) {
+                LocalDate date = meeting.domain.get(i);
+                LocalDate rightDate;
+                for (DateConstraint c : constraints) {
+                    if (c.arity() == 1) {
+                        rightDate = ((UnaryDateConstraint) c).R_VAL;
+                        if (!testConstraint(date, rightDate, c)) {
+                            meeting.domain.remove(date);
+                            i--;
+                            break;
+                        }
+                    }
+                }  
+            }
+        }
+        return variables;
+    }
+    
+    private static boolean testConstraint(LocalDate leftDate, LocalDate rightDate, DateConstraint c) {
+        boolean sat = false;
+        switch (c.OP) {
+        case "==": if (leftDate.isEqual(rightDate))  sat = true; break;
+        case "!=": if (!leftDate.isEqual(rightDate)) sat = true; break;
+        case ">":  if (leftDate.isAfter(rightDate))  sat = true; break;
+        case "<":  if (leftDate.isBefore(rightDate)) sat = true; break;
+        case ">=": if (leftDate.isAfter(rightDate) || leftDate.isEqual(rightDate))  sat = true; break;
+        case "<=": if (leftDate.isBefore(rightDate) || leftDate.isEqual(rightDate)) sat = true; break;
+        }
+        return sat;
+    }
+    
+    private static List<LocalDate> backtrackingTree (List<DateVar> variables, Set<DateConstraint> constraints) {
+    	if (variables.get(variables.size() - 1).currentDate != null) {
+    	    List<LocalDate> solution = new ArrayList<LocalDate>();
+    	    for (DateVar meeting : variables) {
+    	        solution.add(meeting.currentDate);
+    	    }
+    		return solution;
     	}
-    	DateVar newDate = new DateVar(assignment.size(), rangeStart, rangeEnd, constraints);
-    	for (LocalDate date : newDate.domain) {
-    		assignment.add(assignment.size(), date);
-    		if (testSolution(assignment, constraints)) {
-    			List<LocalDate> result = backtrackingTree(assignment, nMeetings, rangeStart, rangeEnd, constraints);
+    	DateVar currentMeeting = null;
+    	for (DateVar meeting : variables) {
+    	    if (meeting.currentDate == null) {
+    	        currentMeeting = meeting;
+    	        break;
+    	    }
+    	}
+    	for (LocalDate date : currentMeeting.domain) {
+    		currentMeeting.currentDate = date;
+    		if (checkConsistency(variables, constraints)) {
+    			List<LocalDate> result = backtrackingTree(variables, constraints);
     			if (result != null) {
         			return result;
         		}
     		}
-    		assignment.remove(assignment.size() - 1);
+    		currentMeeting.currentDate = null;
     	}
     	return null;
     }
@@ -53,56 +105,41 @@ public class CSP {
      * @param soln Full instantiation of variables to assigned values, indexed by variable
      * @param constraints The set of constraints the solution must satisfy
      */
-    private static boolean testSolution (List<LocalDate> soln, Set<DateConstraint> constraints) {
+    public static boolean checkConsistency (List<DateVar> variables, Set<DateConstraint> constraints) {
+        boolean sat = false;
         for (DateConstraint d : constraints) {
-        	if (d.L_VAL >= soln.size()) {
-        		continue;
-        	}
-            LocalDate leftDate = soln.get(d.L_VAL),
-                      rightDate = null;
-            if (d.arity() == 1) {
-            	rightDate = ((UnaryDateConstraint) d).R_VAL;
-            } else if (((BinaryDateConstraint) d).R_VAL < soln.size()) {
-            	rightDate = soln.get(((BinaryDateConstraint) d).R_VAL);
-            } else {
-            	continue;
-            }
+            LocalDate leftDate = variables.get(d.L_VAL).currentDate,
+                      rightDate = (d.arity() == 1) 
+                          ? ((UnaryDateConstraint) d).R_VAL 
+                          : variables.get(((BinaryDateConstraint) d).R_VAL).currentDate;
             
-            if(!testConstraint(leftDate, rightDate, d)) {
-            	return false;
+            sat = false;
+            if (leftDate == null || rightDate == null) {
+                sat = true;
+                continue;
+            }
+            switch (d.OP) {
+            case "==": if (leftDate.isEqual(rightDate))  sat = true; break;
+            case "!=": if (!leftDate.isEqual(rightDate)) sat = true; break;
+            case ">":  if (leftDate.isAfter(rightDate))  sat = true; break;
+            case "<":  if (leftDate.isBefore(rightDate)) sat = true; break;
+            case ">=": if (leftDate.isAfter(rightDate) || leftDate.isEqual(rightDate))  sat = true; break;
+            case "<=": if (leftDate.isBefore(rightDate) || leftDate.isEqual(rightDate)) sat = true; break;
+            }
+            if (!sat) {
+                return sat;
             }
         }
-        return true;
-    }
-    
-    private static boolean testConstraint(LocalDate leftDate, LocalDate rightDate, DateConstraint c) {
-    	boolean sat = false;
-		switch (c.OP) {
-        case "==": if (leftDate.isEqual(rightDate))  sat = true; break;
-        case "!=": if (!leftDate.isEqual(rightDate)) sat = true; break;
-        case ">":  if (leftDate.isAfter(rightDate))  sat = true; break;
-        case "<":  if (leftDate.isBefore(rightDate)) sat = true; break;
-        case ">=": if (leftDate.isAfter(rightDate) || leftDate.isEqual(rightDate))  sat = true; break;
-        case "<=": if (leftDate.isBefore(rightDate) || leftDate.isEqual(rightDate)) sat = true; break;
-        }
-		return sat;
+        return sat;
     }
     
     private static class DateVar {
     	List<LocalDate> domain = new ArrayList<LocalDate>();
+    	LocalDate currentDate;
     	
-    	DateVar(int currentMeeting, LocalDate rangeStart, LocalDate rangeEnd, Set<DateConstraint> constraints) {
+    	DateVar(LocalDate rangeStart, LocalDate rangeEnd) {
     		for (LocalDate date = rangeStart; !date.isAfter(rangeEnd); date = date.plusDays(1)) {
-    			boolean sat = true;
-    			for (DateConstraint c : constraints) {
-    				if (c.L_VAL == currentMeeting && 
-    				        c.arity() == 1 && 
-    				        !testConstraint(date, ((UnaryDateConstraint) c).R_VAL, c)) {
-        						sat = false;
-        						break;
-    				}
-    			}
-    			if (sat) { domain.add(date); };
+    			domain.add(date);
     		}
     	}
     	
