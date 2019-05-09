@@ -1,3 +1,16 @@
+/************************************************************************************************
+*   Name:       Huffman.java
+*   Date:       05/09/2019
+*   @author:    Jeremy Goldberg
+*   @author:    Andrey Varakin
+*   Purpose:    You must schedule n meetings within some allowable date range.
+                Those meetings may have additional constraints (e.g., must occur before a certain 
+                date, must not conflict with another meeting).
+                A *solution* to this CSP will be some date assigned to each of the n meetings such 
+                that all constraints are satisfied.
+*   @see:       http://forns.lmu.build/classes/spring-2019/cmsi-282/homework/hw5/homework-5.html
+**************************************************************************************************/
+
 package csp;
 
 import java.time.LocalDate;
@@ -35,6 +48,13 @@ public class CSP {
         return solution;
     }
     
+    /**
+     * Tests node consistency on the given variables and given constraints
+     * Removes impossible values from domains of variables
+     * @param variables List of DateVar that has all the variables and their domains
+     * @param constraints The set of constraints the solution must satisfy
+     * @return variables with only valid domains
+     */
     private static List<DateVar> pruneDomains(List<DateVar> variables, Set<DateConstraint> constraints) {
         for (DateVar meeting : variables) {
             for (int i = 0; i < meeting.domain.size(); i++) {
@@ -55,6 +75,13 @@ public class CSP {
         return variables;
     }
     
+    /**
+     * Tests whether two given LocalDates pass the given constraint
+     * @param leftDate Date on left side of constraint
+     * @param rightDate Date on right side of constraint
+     * @param c The DateConstraint used in testing
+     * @return sat boolean on if condition was satisfied
+     */
     private static boolean testConstraint(LocalDate leftDate, LocalDate rightDate, DateConstraint c) {
         boolean sat = false;
         switch (c.OP) {
@@ -68,6 +95,11 @@ public class CSP {
         return sat;
     }
     
+    /**
+     * Searches for solution by creating a recursive backtracking tree
+     * @param variables List of DateVar that has all the variables and their domains
+     * @param constraints The set of constraints the solution must satisfy
+     */
     private static List<LocalDate> backtrackingTree (List<DateVar> variables, Set<DateConstraint> constraints) {
     	if (variables.get(variables.size() - 1).currentDate != null) {
     	    List<LocalDate> solution = new ArrayList<LocalDate>();
@@ -114,14 +146,7 @@ public class CSP {
                 sat = true;
                 continue;
             }
-            switch (d.OP) {
-            case "==": if (leftDate.isEqual(rightDate))  sat = true; break;
-            case "!=": if (!leftDate.isEqual(rightDate)) sat = true; break;
-            case ">":  if (leftDate.isAfter(rightDate))  sat = true; break;
-            case "<":  if (leftDate.isBefore(rightDate)) sat = true; break;
-            case ">=": if (leftDate.isAfter(rightDate) || leftDate.isEqual(rightDate))  sat = true; break;
-            case "<=": if (leftDate.isBefore(rightDate) || leftDate.isEqual(rightDate)) sat = true; break;
-            }
+            sat = testConstraint(leftDate, rightDate, d);
             if (!sat) {
                 return sat;
             }
@@ -129,14 +154,25 @@ public class CSP {
         return sat;
     }
     
+    /**
+     * Private class for DateVar which holds a list of LocalDates as its domain and
+     * The current date the variable is set to
+     */
     private static class DateVar {
     	List<LocalDate> domain = new ArrayList<LocalDate>();
     	LocalDate currentDate;
     	
+    	/**
+         * Constructor for DateVar
+         * Adds all days in given range to domain
+         * @param rangeStart The first possible day in the domain
+         * @param rangeEnd The last possible day in the domain
+         */
     	DateVar(LocalDate rangeStart, LocalDate rangeEnd) {
     		for (LocalDate date = rangeStart; !date.isAfter(rangeEnd); date = date.plusDays(1)) {
     			domain.add(date);
     		}
+    		
     	}
     	
     }
